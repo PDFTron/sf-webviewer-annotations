@@ -1,0 +1,16 @@
+<template>
+    <template if:true={isLoading}>
+       <div class="spinnerContainer">
+           <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+       </div>
+   </template>
+    <lightning-card title="Change Status">
+        <div class="slds-p-around_xx-small slds-align_absolute-center">
+                <lightning-button-group>
+                        <lightning-button label="Revisions" data-status="Revisions" variant="neutral" onclick={handleFlatten}></lightning-button>
+                        <lightning-button label="Mech Approved" data-status="Mech Approved" variant="neutral" onclick={handleFlatten}></lightning-button>
+                    
+                </lightning-button-group>
+        </div>
+    </lightning-card>
+</template>
