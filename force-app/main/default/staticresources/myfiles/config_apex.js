@@ -145,6 +145,22 @@ const downloadFile = (blob, fileName) => {
   setTimeout(() => URL.revokeObjectURL(link.href), 7000);
 };
 
+function createSavedModal(instance) {
+  const divInput = document.createElement('div');
+  divInput.innerText = 'File saved successfully.';
+  const modal = {
+    dataElement: 'savedModal',
+    body: {
+      className: 'myCustomModal-body',
+      style: {
+        'text-align': 'center'
+      },
+      children: [divInput]
+    }
+  }
+  instance.UI.addCustomModal(modal);
+}
+
 window.addEventListener('viewerLoaded', async function () {
   currentDocId = ''
   parent.postMessage({ type: 'VIEWER_LOADED' }, '*');
@@ -153,6 +169,9 @@ window.addEventListener('viewerLoaded', async function () {
   // pdftronWvInstance code to pass User Record information to this config file
   // to invoke annotManager.setCurrentUser
   instance.Core.documentViewer.getAnnotationManager().setCurrentUser(custom.username);
+
+  //add custom save modal
+  createSavedModal(instance);
 });
 
 window.addEventListener('documentLoaded', () => {  
@@ -212,9 +231,9 @@ function receiveMessage(event) {
         saveDocument(status);
         break;
       case 'DOCUMENT_SAVED':
-        instance.showErrorMessage('Document saved ')
+        instance.UI.openElements(['savedModal']);
         setTimeout(() => {
-          instance.closeElements(['errorModal', 'loadingModal'])
+          instance.closeElements(['savedModal', 'loadingModal'])
         }, 2000)
         break;
       case 'LOAD_ANNOTATIONS_FINISHED':
