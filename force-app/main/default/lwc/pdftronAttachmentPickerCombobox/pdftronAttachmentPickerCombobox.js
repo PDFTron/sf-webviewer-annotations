@@ -24,22 +24,20 @@ export default class PdftronAttachmentPickerCombobox extends LightningElement {
   @wire(CurrentPageReference) pageRef
 
   renderedCallback () {
-    if (!this.documentsRetrieved) {
-      getAttachments({ recordId: this.recordId })
-        .then(data => {
-          this.attachments = data
-          this.initLookupDefaultResults()
-          this.error = undefined
-          this.loadFinished = true
-          this.documentsRetrieved = true
-        })
-        .catch(error => {
-          console.error(error)
-          this.showNotification('Error', error, 'error')
-          this.error = error
-          this.loadFinished = true
-        })
-    }
+    getAttachments({ recordId: this.recordId })
+      .then(data => {
+        this.attachments = data
+        this.initLookupDefaultResults()
+        this.error = undefined
+        this.loadFinished = true
+        this.documentsRetrieved = true
+      })
+      .catch(error => {
+        console.error(error)
+        this.showNotification('Error', error, 'error')
+        this.error = error
+        this.loadFinished = true
+      })
   }
 
   connectedCallback () {

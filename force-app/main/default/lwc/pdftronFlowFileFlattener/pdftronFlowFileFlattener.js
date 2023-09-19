@@ -2,7 +2,8 @@ import { LightningElement, api, wire, track } from 'lwc';
 import { fireEvent, registerListener, unregisterAllListeners } from 'c/pubsub'
 import { CurrentPageReference } from 'lightning/navigation'
 import { getRecordNotifyChange } from 'lightning/uiRecordApi'
-import updateRoundStatus from '@salesforce/apex/PDFTron_ContentVersionController.updateRoundStatus';
+import getFileDataFromId from '@salesforce/apex/PDFTron_ContentVersionController.getAttachments';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent'
 
 export default class PdftronFlowFileFlattener extends LightningElement {
 
@@ -18,11 +19,18 @@ export default class PdftronFlowFileFlattener extends LightningElement {
 
     @wire(CurrentPageReference)
     pageRef;
+    fileName;
+
+    attachments;
+
+
 
     connectedCallback() {
+      registerListener('finishFlatten', this.flattenCompletedDocument, this);
     }
 
     renderedCallback() {
+      
     }
 
 
@@ -31,17 +39,24 @@ export default class PdftronFlowFileFlattener extends LightningElement {
         let status = event.target.dataset.status; //get status API value from data-status attribute
 
         this.currentStatus = status;
-        updateRoundStatus({recordId: this.recordId, status}).then(response => {
-            getRecordNotifyChange([{recordId: this.recordId}]);
-            console.log(`Successfully updated ${this.recordId} status to ${status}`);
-            this.isLoading = false;
-            this.showButtons = false;
-          })
-          .catch(error => {
-            console.error(error)
-            this.isLoading = false;
-          });
 
-          fireEvent(this.pageRef, 'flattenfile', this.currentStatus);
+        fireEvent(this.pageRef, 'flattenfile', this.currentStatus);
+
+        
+        
+    }
+
+    flattenCompletedDocument(payload){
+      this.isLoading= payload;
+      this.showButtons = payload;
+    }
+
+    showNotification (title, message, variant) {
+      const evt = new ShowToastEvent({
+        title: title,
+        message: message,
+        variant: variant
+      })
+      this.dispatchEvent(evt)
     }
 }

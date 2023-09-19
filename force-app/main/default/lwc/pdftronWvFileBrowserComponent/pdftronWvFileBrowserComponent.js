@@ -1,7 +1,7 @@
 import { LightningElement, wire, track, api } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 /** ContentVersionController.getContentVersions() Apex method */
-import getContentVersions from '@salesforce/apex/PDFTron_ContentVersionController.getContentVersions';
+// import getContentVersions from '@salesforce/apex/PDFTron_ContentVersionController.getContentVersions';
 
 const actions = [
   { label: 'Show details', name: 'show_details' },
@@ -32,16 +32,16 @@ export default class PdftronWvFileBrowserComponent extends NavigationMixin(Light
   @track contentVersions;
   columns = columns;
 
-  @wire(getContentVersions, {})
-  handleGeRecords({error, data}){
-    if (error) {
-      return;
-    }
+  // @wire(getContentVersions, {})
+  // handleGeRecords({error, data}){
+  //   if (error) {
+  //     return;
+  //   }
 
-    if (data) {
-      this.contentVersions = data;
-    }
-  }
+  //   if (data) {
+  //     this.contentVersions = data;
+  //   }
+  // }
 
   log(...str) {
     console.log(JSON.parse(JSON.stringify(str)));
