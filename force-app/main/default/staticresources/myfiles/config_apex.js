@@ -186,13 +186,13 @@ function receiveMessage(event) {
   if (event.isTrusted && typeof event.data === 'object') {
     switch (event.data.type) {
       case 'OPEN_DOCUMENT':
-        instance.loadDocument(event.data.file)
+        instance.UI.loadDocument(event.data.file)
         break;
       case 'OPEN_DOCUMENT_BLOB':
         const { blob, extension, filename, documentId } = event.data.payload;
         
         currentDocId = documentId;
-        instance.loadDocument(blob, { extension, filename, documentId })
+        instance.UI.loadDocument(blob, { extension, filename, documentId })
         
 
         instance.Core.documentViewer.addEventListener('documentLoaded', function(e) {
@@ -227,7 +227,7 @@ function receiveMessage(event) {
         instance.Core.documentViewer.getAnnotationManager().off('annotationChanged', annotationChanged);
         break;
       case 'LMS_RECEIVED':  
-        instance.loadDocument(event.data.payload.message, {
+        instance.UI.loadDocument(event.data.payload.message, {
           filename: event.data.payload.filename,
           withCredentials: false
         });
