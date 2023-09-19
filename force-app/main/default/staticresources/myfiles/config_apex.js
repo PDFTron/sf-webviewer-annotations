@@ -167,7 +167,7 @@ window.addEventListener('documentLoaded', () => {
       //skip imported annotations
       return;
     }
-    annotationManager.exportAnnotCommand().then(function(xfdfString) {
+    annotationManager.exportAnnotationCommand().then(function(xfdfString) {
       annotations.forEach(function(annot) {
         savexfdfString({
           action,
