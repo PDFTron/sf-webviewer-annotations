@@ -42,29 +42,6 @@ public with sharing class PDFTron_ContentVersionController {
         }
     }
 
-    // @AuraEnabled
-    // public static String getRoundStatus(String recordId){
-    //     try {
-    //         PMX_Element_Approval_Round__c currentRound = [SELECT Id, Status__c FROM PMX_Element_Approval_Round__c WHERE Id = :recordId];
-
-    //         return currentRound.Status__c + '';
-    //     } catch (Exception e) {
-    //         throw new AuraHandledException(e.getMessage());
-    //     }
-    // }
-
-    // @AuraEnabled
-    // public static void updateRoundStatus(String recordId, String status){
-    //     try {
-           
-    //         PMX_Element_Approval_Round__c currentRound = [SELECT Id, Status__c FROM PMX_Element_Approval_Round__c WHERE Id = :recordId];
-    //         currentRound.Status__c = status;
-    //         update currentRound;            
-    //     } catch (Exception e) {
-    //         throw new AuraHandledException(e.getMessage());
-    //     }
-    // }
-
     @AuraEnabled
     public static ContentVersionWrapper getBase64FromCv(String recordId) {
         try {
@@ -111,34 +88,6 @@ public with sharing class PDFTron_ContentVersionController {
             throw new AuraHandledException(e.getMessage());
         }
     }
-
-    // @AuraEnabled
-    // public static void saveErrorLog(String errorMessage, String source) {
-    //     Error_Log__c generatedFile = new Error_Log__c();
-    //     String className = 'PDFTron_ContentVersionController';
-    //     if(String.isNotEmpty(source)) {
-    //         className += ' - Source: ' + source;
-    //     }
-    //     generatedFile.Apex_Class_Name__c = className;
-    //     generatedFile.Error_Message__c = errorMessage;
-    //     generatedFile.User_Name__c = UserInfo.getUserName();
-    //     insert generatedFile;
-    // }
-
-    // public class errorLogPayload {
-    //     public String title {get; set;}
-    //     public String filename {get; set;}
-    //     public String base64Data {get; set;}
-    //     public String contentDocumentId {get; set;}
-
-    //     public PDFTron_ContentVersionPayload(String json) {
-    //         PDFTron_ContentVersionPayload pl = (PDFTron_ContentVersionPayload) System.JSON.deserialize(json, PDFTron_ContentVersionPayload.class);
-    //         this.title = pl.title;
-    //         this.filename = pl.filename;
-    //         this.base64Data = pl.base64Data;
-    //         this.contentDocumentId = pl.contentDocumentId;
-    //     }
-    // }
 
     @AuraEnabled
     public static String saveDocument(String json, String recordId, String cvId) {
