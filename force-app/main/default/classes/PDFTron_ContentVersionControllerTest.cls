@@ -34,10 +34,6 @@ public class PDFTron_ContentVersionControllerTest {
             IsMajorVersion = false /*so that can be updated later on*/
             );
         insert contentVersion_1;
-        // PMX_Element__c element = new PMX_Element__c (Element_Type__c='Beauty Shot');
-        // insert element;
-        // PMX_Element_Approval_Round__c round = new PMX_Element_Approval_Round__c (Name ='Round 1',Status__c='In Progress',PMX_Element__c=element.Id);
-        // insert round;
         
     }
     @isTest static void testGetUser() {
@@ -111,14 +107,7 @@ public class PDFTron_ContentVersionControllerTest {
         PDFTron_ContentVersionController.convertBytesToFormattedString(value3);
         PDFTron_ContentVersionController.convertBytesToFormattedString(value4);
             }
-    /*@isTest static void testGetAnnotations(){
-     PDFTronAnnotations__c pdf = new PDFTronAnnotations__c();
-    }*/
     
-    // @isTest static void testgetRoundStatus(){ 
-    //     PMX_Element_Approval_Round__c rnd = [SELECT Id, Name,Status__c FROM PMX_Element_Approval_Round__c WHERE Name = 'Round 1'];
-    //     PDFTron_ContentVersionController.getRoundStatus(rnd.Id);
-    // }
     
     @isTest static void testgetProfile(){
         PDFTron_ContentVersionController.getProfile();

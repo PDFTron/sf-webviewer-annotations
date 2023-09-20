@@ -42,28 +42,6 @@ public with sharing class PDFTron_ContentVersionController {
         }
     }
 
-    // @AuraEnabled
-    // public static String getRoundStatus(String recordId){
-    //     try {
-    //         PMX_Element_Approval_Round__c currentRound = [SELECT Id, Status__c FROM PMX_Element_Approval_Round__c WHERE Id = :recordId];
-
-    //         return currentRound.Status__c + '';
-    //     } catch (Exception e) {
-    //         throw new AuraHandledException(e.getMessage());
-    //     }
-    // }
-
-    // @AuraEnabled
-    // public static void updateRoundStatus(String recordId, String status){
-    //     try {
-           
-    //         PMX_Element_Approval_Round__c currentRound = [SELECT Id, Status__c FROM PMX_Element_Approval_Round__c WHERE Id = :recordId];
-    //         currentRound.Status__c = status;
-    //         update currentRound;            
-    //     } catch (Exception e) {
-    //         throw new AuraHandledException(e.getMessage());
-    //     }
-    // }
 
     @AuraEnabled
     public static ContentVersionWrapper getBase64FromCv(String recordId) {
