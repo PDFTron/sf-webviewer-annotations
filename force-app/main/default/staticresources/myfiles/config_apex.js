@@ -29,6 +29,7 @@ if (custom.fullAPI) {
 window.Core.setExternalPath(resourceURL + 'external')
 
 let currentDocId = '';
+let generatedFileName;
 
 function loadxfdfStrings() {
   parent.postMessage({type: 'LOAD_ANNOTATIONS' }, '*');
@@ -90,8 +91,9 @@ async function saveDocument(status) {
 
   const base64Data = window.btoa(binary);
 
-  const title = filename.replace(/\.[^/.]+$/, "")+ `_${status}`
+  const title = filename.replace(/\.[^/.]+$/, "")+ `_${status}`;
   const full_filename = filename.replace(/\.[^/.]+$/, "")+ `_${status}` + filename.substring(filename.lastIndexOf('.'))
+  generatedFileName = full_filename;
 
   const payload = {
     title,
@@ -145,22 +147,6 @@ const downloadFile = (blob, fileName) => {
   setTimeout(() => URL.revokeObjectURL(link.href), 7000);
 };
 
-function createSavedModal(instance) {
-  const divInput = document.createElement('div');
-  divInput.innerText = 'File saved successfully.';
-  const modal = {
-    dataElement: 'savedModal',
-    body: {
-      className: 'myCustomModal-body',
-      style: {
-        'text-align': 'center'
-      },
-      children: [divInput]
-    }
-  }
-  instance.UI.addCustomModal(modal);
-}
-
 window.addEventListener('viewerLoaded', async function () {
   currentDocId = ''
   parent.postMessage({ type: 'VIEWER_LOADED' }, '*');
@@ -169,9 +155,6 @@ window.addEventListener('viewerLoaded', async function () {
   // pdftronWvInstance code to pass User Record information to this config file
   // to invoke annotManager.setCurrentUser
   instance.Core.documentViewer.getAnnotationManager().setCurrentUser(custom.username);
-
-  //add custom save modal
-  createSavedModal(instance);
 });
 
 window.addEventListener('documentLoaded', () => {  
@@ -184,7 +167,7 @@ window.addEventListener('documentLoaded', () => {
       //skip imported annotations
       return;
     }
-    annotationManager.exportAnnotCommand().then(function(xfdfString) {
+    annotationManager.exportAnnotationCommand().then(function(xfdfString) {
       annotations.forEach(function(annot) {
         savexfdfString({
           action,
@@ -203,13 +186,13 @@ function receiveMessage(event) {
   if (event.isTrusted && typeof event.data === 'object') {
     switch (event.data.type) {
       case 'OPEN_DOCUMENT':
-        instance.loadDocument(event.data.file)
+        instance.UI.loadDocument(event.data.file)
         break;
       case 'OPEN_DOCUMENT_BLOB':
         const { blob, extension, filename, documentId } = event.data.payload;
         
         currentDocId = documentId;
-        instance.loadDocument(blob, { extension, filename, documentId })
+        instance.UI.loadDocument(blob, { extension, filename, documentId })
         
 
         instance.Core.documentViewer.addEventListener('documentLoaded', function(e) {
@@ -228,12 +211,13 @@ function receiveMessage(event) {
         break;
       case 'FLATTEN_DOC':
         let status = event.data.payload;
+        console.log(status);
         saveDocument(status);
         break;
       case 'DOCUMENT_SAVED':
-        instance.UI.openElements(['savedModal']);
+        instance.showErrorMessage('Document generated ' + generatedFileName);
         setTimeout(() => {
-          instance.closeElements(['savedModal', 'loadingModal'])
+          instance.closeElements(['errorModal', 'loadingModal'])
         }, 2000)
         break;
       case 'LOAD_ANNOTATIONS_FINISHED':
@@ -243,7 +227,7 @@ function receiveMessage(event) {
         instance.Core.documentViewer.getAnnotationManager().off('annotationChanged', annotationChanged);
         break;
       case 'LMS_RECEIVED':  
-        instance.loadDocument(event.data.payload.message, {
+        instance.UI.loadDocument(event.data.payload.message, {
           filename: event.data.payload.filename,
           withCredentials: false
         });

@@ -10,6 +10,9 @@ import saveDocument from '@salesforce/apex/PDFTron_ContentVersionController.flat
 import getUser from '@salesforce/apex/PDFTron_ContentVersionController.getUser';
 import getAnnotations from '@salesforce/apex/PDFTron_ContentVersionController.getAnnotations';
 import saveAnnotations from '@salesforce/apex/PDFTron_ContentVersionController.saveAnnotations';
+import { getRecordNotifyChange } from 'lightning/uiRecordApi'
+// import updateRoundStatus from '@salesforce/apex/PDFTron_ContentVersionController.updateRoundStatus';
+// import saveErrorLog from '@salesforce/apex/PDFTron_ContentVersionController.saveErrorLog';
 
 function _base64ToArrayBuffer(base64) {
   var binary_string =  window.atob(base64);
@@ -47,6 +50,7 @@ export default class PdftronWvInstance extends LightningElement {
   @track currentDocId = '';
   fetchAnnots = false;
   lastRefresh = '';
+  status;
 
   connectedCallback() { 
     
@@ -113,6 +117,7 @@ export default class PdftronWvInstance extends LightningElement {
   }
 
   handleInitWithCurrentUser() {
+
     getUser()
     .then((result) => {
         this.username = result;
@@ -156,6 +161,7 @@ export default class PdftronWvInstance extends LightningElement {
       enableFilePicker: this.enableFilePicker,
       enableRedaction: this.enableRedaction,
       enableMeasurement: this.enableMeasurement,
+      enableOptimizedWorkers: false
       // l: 'YOUR_LICENSE_KEY_HERE',
     }, viewerElement);
 
@@ -166,6 +172,8 @@ export default class PdftronWvInstance extends LightningElement {
   }
 
   flattenCompletedDocument(payload) {
+    console.log(payload);
+    this.status = payload;
     this.iframeWindow.postMessage({type: 'FLATTEN_DOC', payload: payload}, '*');
   }
 
@@ -174,11 +182,14 @@ export default class PdftronWvInstance extends LightningElement {
     if (event.isTrusted && typeof event.data === 'object') {
       switch (event.data.type) {
         case 'SAVE_DOCUMENT':
+          this.showNotification('Save in progress', 'Your changes are being saved. Please do not close this window.', 'warning');
+          
           console.log("recId: " , this.recordId);
 
           if(this.isFinal) {
             break;
           }
+          
 
           const cvId = event.data.payload.contentDocumentId;
 
@@ -186,15 +197,35 @@ export default class PdftronWvInstance extends LightningElement {
             this.isFinal = true;
             saveDocument({ json: JSON.stringify(event.data.payload), recordId: this.recordId ? this.recordId : '', cvId: cvId })
             .then((response) => {
-              me.iframeWindow.postMessage({ type: 'DOCUMENT_SAVED', response }, '*')
-              fireEvent(this.pageRef, 'refreshOnSave', response);
+              
+                // updateRoundStatus({recordId: this.recordId, status: this.status}).then( () => {
+                getRecordNotifyChange([{recordId: this.recordId}]);
+                this.showNotification(
+                  'Success',
+                  event.data.payload.filename,
+                  'success'
+                );
+                fireEvent(this.pageRef, 'finishFlatten', false);
+                console.log(`Successfully updated ${this.recordId} status to ${this.status}`);
+                // })
+                // .catch(error => {
+                //   console.error(error);
+                  
+                //   this.isLoading = false;
+                // });
+
+                me.iframeWindow.postMessage({ type: 'DOCUMENT_SAVED', response }, '*')
+                fireEvent(this.pageRef, 'refreshOnSave', response);
             })
             .catch(error => {
-              me.iframeWindow.postMessage({ type: 'DOCUMENT_SAVED', error }, '*')
-              fireEvent(this.pageRef, 'refreshOnSave', error);
-              console.error(event.data.payload.contentDocumentId);
-              console.error(JSON.stringify(error));
-              this.showNotification('Error', error.body, 'error')
+
+                // saveErrorLog({errorMessage: error.body, source: "pdftronWvInstance.js"});
+
+                me.iframeWindow.postMessage({ type: 'DOCUMENT_SAVED', error }, '*')
+                fireEvent(this.pageRef, 'refreshOnSave', error);
+                console.error(event.data.payload.contentDocumentId);
+                console.error(JSON.stringify(error));
+                // this.showNotification('Error', error.body, 'error')
             });
           }
           break;
