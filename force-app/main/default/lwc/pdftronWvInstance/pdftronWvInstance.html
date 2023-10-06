@@ -1,0 +1,8 @@
+<template>
+   <template if:true={isLoading}>
+      <div class="spinnerContainer">
+          <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+      </div>
+  </template>
+   <div class="pdf_viewer slds-grid slds-grid--vertical-stretch slds-card" id='pdf_viewer' data-target-id="webviewer-id"></div>
+</template>
